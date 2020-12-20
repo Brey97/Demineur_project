@@ -40,22 +40,41 @@ public class MainActivity extends AppCompatActivity {
 
         initializeGame(celluleArrayList);
         ArrayList<Integer> bombeClick = new ArrayList<>();
+        ArrayList<Integer> flagClick = new ArrayList<>();
 
         gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 
                 int bombe =0;
-                if(bombeClick.size()==0){
-                    celluleArrayList.get(position).setClickOrNot(1);
-                    bombe = NeighboursBombe(celluleArrayList,position,rows,cols);
-                    celluleArrayList.get(position).setBombeNextTo(bombe);
+                if(flagClick.size() !=0){
+                    celluleArrayList.get(position).setFlagOrNot(1);
                     gridView.setAdapter(adapter);
-                    if(celluleArrayList.get(position).getBombeOrNot() == 1){
-                        bombeClick.add(1);
+                }
+                else{
+                    if(bombeClick.size()==0){
+                        celluleArrayList.get(position).setClickOrNot(1);
+                        bombe = NeighboursBombe(celluleArrayList,position,rows,cols);
+                        celluleArrayList.get(position).setBombeNextTo(bombe);
+                        gridView.setAdapter(adapter);
+                        if(celluleArrayList.get(position).getBombeOrNot() == 1){
+                            bombeClick.add(1);
+                        }
                     }
                 }
+            }
+        });
 
+        buttonFlag = findViewById(R.id.buttonFlag);
+        buttonFlag.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View v){
+                if(flagClick.size() == 0){
+                    flagClick.add(1);
+                }
+                else{
+                    flagClick.clear();
+                }
             }
         });
 
