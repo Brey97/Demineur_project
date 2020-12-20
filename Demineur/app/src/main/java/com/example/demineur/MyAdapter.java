@@ -63,11 +63,11 @@ public class MyAdapter extends BaseAdapter {
                 }
             }
             else{
-                cell_picture.setImageResource(R.drawable.bombe);
+                cell_picture.setImageResource(R.drawable.bombe_m);
             }
         }
         else if(arrayList.get(position).getFlagOrNot()!=0 && arrayList.get(position).getClickOrNot() == 0){
-            cell_picture.setImageResource(R.drawable.case_flag);
+            cell_picture.setImageResource(R.drawable.case_flag_yellow);
         }
         else{
             cell_picture.setImageResource(R.drawable.case_vierge);
