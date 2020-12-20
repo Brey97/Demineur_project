@@ -1,5 +1,6 @@
 package com.example.demineur;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.Bundle;
@@ -7,6 +8,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.GridView;
 import android.widget.ListView;
 import android.widget.Toast;
@@ -19,16 +21,62 @@ public class MainActivity extends AppCompatActivity {
 
     GridView gridView;
     MyAdapter adapter;
+    private Button buttonNewGame;
+    private Button buttonFlag;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        int rows = 10;
+        int cols = 10;
+
         ArrayList<Cellule> celluleArrayList = new ArrayList<>();
 
+        initializeGrid(celluleArrayList);
 
-        for (int i=0; i<90; i++) {
+        Log.e("my tagidi tag",String.valueOf(celluleArrayList.size()));
+
+        initializeGame(celluleArrayList);
+        ArrayList<Integer> bombeClick = new ArrayList<>();
+
+        gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+
+                int bombe =0;
+                if(bombeClick.size()==0){
+                    celluleArrayList.get(position).setClickOrNot(1);
+                    bombe = NeighboursBombe(celluleArrayList,position,rows,cols);
+                    celluleArrayList.get(position).setBombeNextTo(bombe);
+                    gridView.setAdapter(adapter);
+                    if(celluleArrayList.get(position).getBombeOrNot() == 1){
+                        bombeClick.add(1);
+                    }
+                }
+
+            }
+        });
+
+        buttonNewGame = findViewById(R.id.buttonNewGame);
+        buttonNewGame.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View v){
+                bombeClick.clear();
+                celluleArrayList.clear();
+                initializeGrid(celluleArrayList);
+                initializeGame(celluleArrayList);
+            }
+        });
+
+
+    }
+    public void initializeGrid(ArrayList<Cellule> celluleArrayList){
+        int rows = 10;
+        int cols = 10;
+
+        for (int i=0; i<100; i++) {
             if(i<20){
                 celluleArrayList.add(new Cellule(0,1));
             }
@@ -38,24 +86,14 @@ public class MainActivity extends AppCompatActivity {
         }
         Collections.shuffle(celluleArrayList);
 
-        Log.e("my tagidi tag",String.valueOf(celluleArrayList.size()));
-
+    }
+    public void initializeGame(ArrayList<Cellule> celluleArrayList){
         gridView = (GridView) findViewById(R.id.gridView);
         adapter = new MyAdapter(this, celluleArrayList);
         gridView.setAdapter(adapter);
 
-        gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                int bombe =0;
-                celluleArrayList.get(position).setClickOrNot(1);
-                bombe = NeighboursBombe(celluleArrayList,position);
-                celluleArrayList.get(position).setBombeNextTo(bombe);
-                gridView.setAdapter(adapter);
-            }
-        });
     }
-    public Cellule[][] monoToBidi(ArrayList<Cellule> array, final int rows, final int cols ) {
+    public Cellule[][] monoToBidi(ArrayList<Cellule> array, int rows, int cols ) {
 
         Cellule[][] bidi = new Cellule[rows][cols];
         for ( int i = 0; i < rows; i++ ) {
@@ -66,12 +104,12 @@ public class MainActivity extends AppCompatActivity {
         return bidi;
     }
 
-    public int NeighboursBombe(ArrayList<Cellule> array,int position){
+    public int NeighboursBombe(ArrayList<Cellule> array,int position,int rows,int cols){
         int bombe = 0;
-        Cellule[][] bibi = monoToBidi(array,9,10);
+        Cellule[][] bibi = monoToBidi(array,rows,cols);
         for(int i = 0; i<bibi.length;i++){
             for(int j =0;j<bibi[0].length;j++){
-                if( i == position/10 && j == (position%10)){
+                if( i == position/cols && j == (position%cols)){
                     if(i-1>=0 && j-1>=0){
                         bombe += bibi[i-1][j-1].getBombeOrNot();
                     }
