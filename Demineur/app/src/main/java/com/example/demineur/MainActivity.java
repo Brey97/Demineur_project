@@ -60,7 +60,7 @@ public class MainActivity extends AppCompatActivity {
         Cellule[][] bidi = new Cellule[rows][cols];
         for ( int i = 0; i < rows; i++ ) {
             for (int j = 0; j < cols; j++) {
-                bidi[i][j] = array.get(i*9+j);
+                bidi[i][j] = array.get(i*10+j);
             }
         }
         return bidi;
@@ -71,7 +71,7 @@ public class MainActivity extends AppCompatActivity {
         Cellule[][] bibi = monoToBidi(array,9,10);
         for(int i = 0; i<bibi.length;i++){
             for(int j =0;j<bibi[0].length;j++){
-                if( i == position/9 && j == (position%9)){
+                if( i == position/10 && j == (position%10)){
                     if(i-1>=0 && j-1>=0){
                         bombe += bibi[i-1][j-1].getBombeOrNot();
                     }
