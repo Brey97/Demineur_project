@@ -11,6 +11,7 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.GridView;
 import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import java.lang.reflect.Array;
@@ -21,6 +22,7 @@ public class MainActivity extends AppCompatActivity {
 
     GridView gridView;
     MyAdapter adapter;
+    TextView textView;
     private Button buttonNewGame;
     private Button buttonFlag;
 
@@ -48,20 +50,31 @@ public class MainActivity extends AppCompatActivity {
 
                 int bombe =0;
                 if(flagClick.size() !=0){
-                    celluleArrayList.get(position).setFlagOrNot(1);
+                    if(celluleArrayList.get(position).getFlagOrNot() ==0){
+                        celluleArrayList.get(position).setFlagOrNot(1);
+                    }
+                    else{
+                        celluleArrayList.get(position).setFlagOrNot(0);
+                    }
                     gridView.setAdapter(adapter);
                 }
                 else{
                     if(bombeClick.size()==0){
-                        celluleArrayList.get(position).setClickOrNot(1);
-                        bombe = NeighboursBombe(celluleArrayList,position,rows,cols);
-                        celluleArrayList.get(position).setBombeNextTo(bombe);
-                        gridView.setAdapter(adapter);
-                        if(celluleArrayList.get(position).getBombeOrNot() == 1){
-                            bombeClick.add(1);
+                        if(celluleArrayList.get(position).getFlagOrNot() == 0){
+                            celluleArrayList.get(position).setClickOrNot(1);
+                            bombe = NeighboursBombe(celluleArrayList,position,rows,cols);
+                            celluleArrayList.get(position).setBombeNextTo(bombe);
+                            gridView.setAdapter(adapter);
+                            if(celluleArrayList.get(position).getBombeOrNot() == 1){
+                                bombeClick.add(1);
+                            }
                         }
                     }
+                    else{
+                        Toast.makeText(MainActivity.this, "You Lose, press New Game", Toast.LENGTH_SHORT).show();
+                    }
                 }
+                countFlag(celluleArrayList);
             }
         });
 
@@ -69,12 +82,22 @@ public class MainActivity extends AppCompatActivity {
         buttonFlag.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View v){
-                if(flagClick.size() == 0){
-                    flagClick.add(1);
+                if(bombeClick.size()==0){
+                    if(flagClick.size() == 0){
+                        flagClick.add(1);
+
+                        Toast.makeText(MainActivity.this, "Press on a tile to put or remove a Flag", Toast.LENGTH_SHORT).show();
+
+                    }
+                    else{
+                        flagClick.clear();
+                        Toast.makeText(MainActivity.this, "Press on a tile to reveal it", Toast.LENGTH_SHORT).show();
+                    }
                 }
                 else{
-                    flagClick.clear();
+                    Toast.makeText(MainActivity.this, "You Lose, press New Game", Toast.LENGTH_SHORT).show();
                 }
+                countFlag(celluleArrayList);
             }
         });
 
@@ -86,9 +109,24 @@ public class MainActivity extends AppCompatActivity {
                 celluleArrayList.clear();
                 initializeGrid(celluleArrayList);
                 initializeGame(celluleArrayList);
+                countFlag(celluleArrayList);
             }
         });
+        countFlag(celluleArrayList);
 
+
+    }
+    public void countFlag(ArrayList<Cellule> celluleArrayList){
+        int flag=0;
+        for(int i =0; i <100;i++){
+            if(celluleArrayList.get(i).getFlagOrNot()==1){
+                flag++;
+            }
+        }
+        TextView tv1 = (TextView)findViewById(R.id.textView2);
+        if(20-flag >=0){
+            tv1.setText(String.valueOf(20-flag) + " flag to put");
+        }
 
     }
     public void initializeGrid(ArrayList<Cellule> celluleArrayList){
